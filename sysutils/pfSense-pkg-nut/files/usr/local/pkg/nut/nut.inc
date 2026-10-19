@@ -119,8 +119,8 @@ function nut_write_rcfile($driver) {
 
 function nut_write_shutdownfile() {
 	$shutdownfile = "#!/bin/sh\n\n";
-	/* rc.start_packages also invokes this script with service arguments. */
-	$shutdownfile .= "if [ -n \"\${1:-}\" ]; then\n";
+	/* rc.start_packages invokes this hook with "start" during boot. */
+	$shutdownfile .= "if [ \"\${1:-}\" = \"start\" ]; then\n";
 	$shutdownfile .= "	exit 0\n";
 	$shutdownfile .= "fi\n\n";
 	$shutdownfile .= "if /usr/local/sbin/upsmon -K\n";
