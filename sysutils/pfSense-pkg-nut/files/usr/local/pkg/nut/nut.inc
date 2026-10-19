@@ -119,6 +119,10 @@ function nut_write_rcfile($driver) {
 
 function nut_write_shutdownfile() {
 	$shutdownfile = "#!/bin/sh\n\n";
+	/* rc.start_packages also invokes this script with service arguments. */
+	$shutdownfile .= "if [ -n \"\${1:-}\" ]; then\n";
+	$shutdownfile .= "	exit 0\n";
+	$shutdownfile .= "fi\n\n";
 	$shutdownfile .= "if /usr/local/sbin/upsmon -K\n";
 	$shutdownfile .= "then\n";
 	$shutdownfile .= "	echo \"NUT killing power...\" | wall\n";
