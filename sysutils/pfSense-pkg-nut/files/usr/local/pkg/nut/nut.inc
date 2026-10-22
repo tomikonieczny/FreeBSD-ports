@@ -118,10 +118,20 @@ function nut_write_rcfile($driver) {
 
 
 function nut_write_shutdownfile() {
+	/*
+	 * NB: Since the shutdown script is in /usr/local/rc.d, it will be
+	 *     routinely invoked by start_packages() or stop_packages()
+	 *     with a command line parameter (start or stop) as a normal
+	 *     course of action. During shutdown, there is an additional
+	 *     invocation that occurs at the end of the shutdown sequence
+	 *     with no command line parameters. We only want to execute the
+	 *     power kill command at the end of the shutdown sequence, so
+	 *     we ignore any invocation that has command line parameters.
+	 */
 	$shutdownfile = "#!/bin/sh\n\n";
-	/* rc.start_packages invokes this hook with "start" during boot. */
-	$shutdownfile .= "if [ \"\${1:-}\" = \"start\" ]; then\n";
-	$shutdownfile .= "	exit 0\n";
+	$shutdownfile .= "if [ $# != 0 ]\n";
+	$shutdownfile .= "then\n";
+	$shutdownfile .= "	return 0\n";
 	$shutdownfile .= "fi\n\n";
 	$shutdownfile .= "if /usr/local/sbin/upsmon -K\n";
 	$shutdownfile .= "then\n";
